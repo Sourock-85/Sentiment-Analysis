@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Sentiment Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f1117;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: #0f1117;
+            padding: 36px 20px 28px;
+            text-align: center;
+            border-bottom: 0.5px solid #1e2030;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: #14532d;
+            color: #4ade80;
+            font-size: 11px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #4ade80, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: #475569;
+        }
+
+        /* ── MAIN CONTAINER ── */
+        .container { max-width: 860px; margin: 36px auto; padding: 0 20px; }
+
+        /* ── TABS ── */
+        .tabs { display: flex; gap: 8px; margin-bottom: 22px; }
+
+        .tab-btn {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: #1e2030;
+            color: #475569;
+            transition: all 0.25s;
+        }
+
+        .tab-btn.active {
+            background: #7c3aed;
+            color: #fff;
+        }
+
+        /* ── PANELS ── */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ── CARD ── */
+        .card {
+            background: #1e2030;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 0.5px solid #2d3148;
+        }
+
+        .card h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            color: #c4b5fd;
+        }
+
+        /* ── INPUTS ── */
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 13px;
+            border-radius: 8px;
+            border: 1px solid #2d3148;
+            background: #0f1117;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            transition: border 0.25s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            border-color: #7c3aed;
+        }
+
+        .hint {
+            font-size: 0.78rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        /* ── BUTTON ── */
+        .btn {
+            width: 100%;
+            padding: 13px;
+            margin-top: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #4ade80;
+            color: #052e16;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.25s;
+        }
+
+        .btn:hover { opacity: 0.88; }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* ── LOADER ── */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 24px;
+            color: #7c3aed;
+        }
+
+        .spinner {
+            width: 34px; height: 34px;
+            border: 3px solid #1e2030;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── RESULTS ── */
+        #results { display: none; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #1e2030;
+            border: 0.5px solid #2d3148;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .summary-card .number { font-size: 1.9rem; font-weight: 600; }
+        .summary-card .label  { font-size: 0.8rem; color: #475569; margin-top: 4px; }
+
+        .col-total    { color: #c4b5fd; }
+        .col-positive { color: #4ade80; }
+        .col-negative { color: #f87171; }
+
+        /* ── VERDICT BANNER ── */
+        .verdict {
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 0.5px solid #2d3148;
+        }
+        .verdict.positive { background: #052e16; border-color: #14532d; }
+        .verdict.negative { background: #1c0a0a; border-color: #450a0a; }
+        .verdict.mixed    { background: #1e1a2e; border-color: #3b2d6e; }
+        .verdict-icon { font-size: 2rem; }
+        .verdict-text h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+        .verdict.positive .verdict-text h3 { color: #4ade80; }
+        .verdict.negative .verdict-text h3 { color: #f87171; }
+        .verdict.mixed    .verdict-text h3 { color: #c4b5fd; }
+        .verdict-text p { font-size: 0.82rem; color: #475569; }
+
+        /* ── CHARTS ── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .chart-wrap { display: flex; justify-content: center; align-items: center; }
+        #sentimentChart { max-width: 220px; }
+        #barChart { width: 100% !important; }
+
+        /* ── WORD CLOUD ── */
+        .wordcloud-img { width: 100%; border-radius: 8px; margin-top: 8px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.4rem; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .tabs { flex-direction: column; }
+            .container { margin: 20px auto; }
+            .pill { font-size: 0.65rem; }
+        }
+
+        /* ── COMMENTS LIST ── */
+        .comments-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .comment-item {
+            background: #0f1117;
+            border-radius: 8px;
+            padding: 13px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            border: 0.5px solid #1e2030;
+        }
+
+        .comment-text { flex: 1; font-size: 0.88rem; color: #94a3b8; line-height: 1.5; }
+
+        .badge {
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge.Positive { background: #14532d; color: #4ade80; }
+        .badge.Negative { background: #450a0a; color: #f87171; }
+
+        .confidence { font-size: 0.72rem; color: #475569; margin-top: 5px; text-align: right; }
+
+        /* ── PLATFORM PILLS ── */
+        .platforms {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            justify-content: center;
+        }
+
+        .pill {
+            background: #1e2030;
+            border: 0.5px solid #2d3148;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #4ade80;
+            flex-shrink: 0;
+        }
+
+        /* ── HINT ── */
+        .hint {
+            font-size: 0.78rem;
+            color: #475569;
+            margin-top: 10px;
+            border-left: 2px solid #7c3aed;
+            padding-left: 10px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-badge">For Creators</div>
+    <h1>Creator Sentiment Dashboard</h1>
+    <p>Understand what your audience really feels — across any platform</p>
+    <div class="platforms">
+        <span class="pill"><span class="pill-dot"></span>Instagram</span>
+        <span class="pill"><span class="pill-dot"></span>Twitter / X</span>
+        <span class="pill"><span class="pill-dot"></span>YouTube</span>
+        <span class="pill"><span class="pill-dot"></span>Reddit</span>
+        <span class="pill"><span class="pill-dot"></span>Facebook</span>
+        <span class="pill"><span class="pill-dot"></span>Any Platform</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('bulk')">
+            📋 Paste Comments
+        </button>
+        <button class="tab-btn" onclick="switchTab('youtube')">
+            🎬 YouTube URL
+        </button>
+    </div>
+
+    <!-- BULK PANEL -->
+    <div class="panel active" id="panel-bulk">
+        <div class="card">
+            <h2>📋 Paste Comments from Any Platform</h2>
+            <textarea id="bulk-input" rows="8"
+                placeholder="Paste your comments here — one per line:
+
+This video is amazing!
+Worst content ever
+Love your style keep it up
+Very boring and repetitive
+Great work as always"></textarea>
+            <p class="hint">Paste one comment per line. Works with Instagram, Twitter/X, Reddit, Facebook and more.</p>
+            <button class="btn" onclick="analyzeBulk()">🔍 Analyze Sentiment</button>
+        </div>
+    </div>
+
+    <!-- YOUTUBE PANEL -->
+    <div class="panel" id="panel-youtube">
+        <div class="card">
+            <h2>🎬 Analyze YouTube Comments</h2>
+            <input type="text" id="yt-input"
+                placeholder="https://www.youtube.com/watch?v=..." />
+            <p class="hint">Automatically fetches up to 00 comments from the video URL.</p>
+            <button class="btn" onclick="analyzeYoutube()">🔍 Analyze Sentiment</button>
+        </div>
+    </div>
+
+    <!-- LOADER -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>Analyzing sentiment...</p>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results">
+
+        <!-- Verdict Banner -->
+        <div class="verdict" id="verdict-banner">
+            <div class="verdict-icon" id="verdict-icon">🎉</div>
+            <div class="verdict-text">
+                <h3 id="verdict-title">Your audience loves your content!</h3>
+                <p id="verdict-sub">Based on the analyzed comments</p>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="number col-total" id="total-count">0</div>
+                <div class="label">Total Comments</div>
+            </div>
+            <div class="summary-card">
+                <div class="number col-positive" id="positive-count">0</div>
+                <div class="label">😊 Positive</div>
+            </div>
+            <div class="summary-card">
+                <div class="number col-negative" id="negative-count">0</div>
+                <div class="label">😞 Negative</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="card">
+            <h2>📊 Sentiment Breakdown</h2>
+            <div class="charts-grid">
+                <div class="chart-wrap">
+                    <canvas id="sentimentChart"></canvas>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Word Cloud -->
+        <div class="card" id="wordcloud-card" style="display:none;">
+            <h2>☁️ Word Cloud</h2>
+            <img id="wordcloud-img" class="wordcloud-img" src="" alt="Word Cloud" />
+        </div>
+
+        <!-- Comments Breakdown -->
+        <div class="card">
+            <h2>💬 Comment-by-Comment Analysis</h2>
+            <div class="comments-list" id="comments-list" style="max-height: 500px; overflow-y: auto;"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let chartInstance = null;
+    let barChartInstance = null;
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', (tab === 'bulk' && i === 0) || (tab === 'youtube' && i === 1));
+        });
+        document.getElementById('panel-bulk').classList.toggle('active', tab === 'bulk');
+        document.getElementById('panel-youtube').classList.toggle('active', tab === 'youtube');
+        document.getElementById('results').style.display = 'none';
+    }
+
+    function showResults(data) {
+        document.getElementById('loader').style.display = 'none';
+
+        if (data.error) { alert('Error: ' + data.error); return; }
+
+        const s = data.summary;
+
+        // ── VERDICT BANNER ──
+        const banner = document.getElementById('verdict-banner');
+        const icon   = document.getElementById('verdict-icon');
+        const title  = document.getElementById('verdict-title');
+        const sub    = document.getElementById('verdict-sub');
+
+        banner.className = 'verdict';
+        if (s.positive_pct >= 70) {
+            banner.classList.add('positive');
+            icon.textContent  = '🎉';
+            title.textContent = 'Your audience loves your content!';
+            sub.textContent   = s.positive_pct + '% of comments are positive — keep it up!';
+        } else if (s.negative_pct >= 70) {
+            banner.classList.add('negative');
+            icon.textContent  = '⚠️';
+            title.textContent = 'Your audience has concerns.';
+            sub.textContent   = s.negative_pct + '% of comments are negative — time to reflect.';
+        } else {
+            banner.classList.add('mixed');
+            icon.textContent  = '🤔';
+            title.textContent = 'Your audience has mixed feelings.';
+            sub.textContent   = s.positive_pct + '% positive, ' + s.negative_pct + '% negative — room to grow!';
+        }
+
+        // ── SUMMARY CARDS ──
+        document.getElementById('total-count').textContent    = s.total;
+        document.getElementById('positive-count').textContent = s.positive + ' (' + s.positive_pct + '%)';
+        document.getElementById('negative-count').textContent = s.negative + ' (' + s.negative_pct + '%)';
+
+        // ── DOUGHNUT CHART ──
+        if (chartInstance) chartInstance.destroy();
+        const ctx = document.getElementById('sentimentChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Positive 😊', 'Negative 😞'],
+                datasets: [{ data: [s.positive, s.negative], backgroundColor: ['#4ade80', '#f87171'], borderWidth: 0 }]
+            },
+            options: { plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } } }
+        });
+
+        // ── BAR CHART ──
+        if (barChartInstance) barChartInstance.destroy();
+        const bctx = document.getElementById('barChart').getContext('2d');
+        barChartInstance = new Chart(bctx, {
+            type: 'bar',
+            data: {
+                labels: ['Positive', 'Negative'],
+                datasets: [{
+                    label: 'Comments',
+                    data: [s.positive, s.negative],
+                    backgroundColor: ['#4ade80', '#f87171'],
+                    borderRadius: 6,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#475569' }, grid: { color: '#1e2030' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                }
+            }
+        });
+
+        // ── WORD CLOUD ──
+        if (data.wordcloud) {
+            document.getElementById('wordcloud-img').src = data.wordcloud;
+            document.getElementById('wordcloud-card').style.display = 'block';
+        }
+
+        // ── COMMENTS LIST ──
+        const list = document.getElementById('comments-list');
+        list.innerHTML = '';
+        data.results.forEach(r => {
+            list.innerHTML += `
+                <div class="comment-item">
+                    <div class="comment-text">${r.comment}</div>
+                    <div>
+                        <div class="badge ${r.sentiment}">${r.sentiment}</div>
+                        <div class="confidence">${r.confidence}% sure</div>
+                    </div>
+                </div>`;
+        });
+
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function analyzeBulk() {
+        const text = document.getElementById('bulk-input').value.trim();
+        if (!text) { alert('Please paste some comments first!'); return; }
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('results').style.display = 'none';
+        const form = new FormData();
+        form.append('comments', text);
+        fetch('/analyze_bulk', { method: 'POST', body: form })
+            .then(r => r.json()).then(showResults)
+            .catch(e => { alert('Something went wrong: ' + e); });
+    }
+
+    function analyzeYoutube() {
+        const url = document.getElementById('yt-input').value.trim();
+        if (!url) { alert('Please enter a YouTube URL!'); return; }
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('results').style.display = 'none';
+        const form = new FormData();
+        form.append('youtube_url', url);
+        fetch('/analyze_youtube', { method: 'POST', body: form })
+            .then(r => r.json()).then(showResults)
+            .catch(e => { alert('Something went wrong: ' + e); });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

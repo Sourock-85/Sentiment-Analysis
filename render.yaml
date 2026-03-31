@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: creator-sentiment-dashboard
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+```
+3. Save (`Ctrl+S`)
+
+---
+
+### File 3 — `.gitignore`
+1. New File → name it exactly `.gitignore`
+2. Paste this:
+```
+cleaned_data.csv
+train_data.csv
+__pycache__/
+*.pyc

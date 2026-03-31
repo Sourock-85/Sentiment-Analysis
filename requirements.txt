@@ -1,0 +1,8 @@
+flask
+scikit-learn
+nltk
+pandas
+numpy
+wordcloud
+youtube-comment-downloader
+gunicorn
