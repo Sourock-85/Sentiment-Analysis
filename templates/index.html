@@ -6,195 +6,63 @@
     <title>Creator Sentiment Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f1117;
-            color: #f8fafc;
-            min-height: 100vh;
-        }
-
-        /* ── HEADER ── */
-        .header {
-            background: #0f1117;
-            padding: 30px 20px 24px;
-            text-align: center;
-            border-bottom: 0.5px solid #1e2030;
-        }
-        .header-badge {
-            display: inline-block;
-            background: #14532d;
-            color: #4ade80;
-            font-size: 11px;
-            padding: 3px 12px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            background: linear-gradient(90deg, #4ade80, #c4b5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #f8fafc; min-height: 100vh; }
+        .header { background: #0f1117; padding: 30px 20px 24px; text-align: center; border-bottom: 0.5px solid #1e2030; }
+        .header-badge { display: inline-block; background: #14532d; color: #4ade80; font-size: 11px; padding: 3px 12px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .header h1 { font-size: 2.5rem; font-weight: 600; background: linear-gradient(90deg, #4ade80, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; letter-spacing: -0.5px; }
         .header p { font-size: 0.9rem; color: #475569; }
-        .platforms {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            justify-content: center;
-        }
-        .pill {
-            background: #1e2030;
-            border: 0.5px solid #2d3148;
-            border-radius: 6px;
-            padding: 5px 12px;
-            font-size: 0.72rem;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .platforms { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
+        .pill { background: #1e2030; border: 0.5px solid #2d3148; border-radius: 6px; padding: 5px 12px; font-size: 0.72rem; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
         .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
-
-        /* ── CONTAINER ── */
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-
-        /* ── TABS ── */
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-        .tab-btn {
-            flex: 1; padding: 12px; border: none; border-radius: 10px;
-            font-size: 0.95rem; font-weight: 500; cursor: pointer;
-            background: #1e2030; color: #475569; transition: all 0.25s;
-        }
+        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; background: #1e2030; color: #475569; transition: all 0.25s; }
         .tab-btn.active { background: #7c3aed; color: #fff; }
-
-        /* ── PANELS ── */
         .panel { display: none; }
         .panel.active { display: block; }
-
-        /* ── CARD ── */
-        .card {
-            background: #1e2030;
-            border-radius: 14px;
-            padding: 22px;
-            border: 0.5px solid #2d3148;
-        }
+        .card { background: #1e2030; border-radius: 14px; padding: 22px; border: 0.5px solid #2d3148; }
         .card h2 { font-size: 0.95rem; font-weight: 500; margin-bottom: 14px; color: #c4b5fd; }
-
-        /* ── INPUTS ── */
-        textarea, input[type="text"] {
-            width: 100%; padding: 13px; border-radius: 8px;
-            border: 1px solid #2d3148; background: #0f1117;
-            color: #f8fafc; font-size: 0.9rem; resize: vertical;
-            outline: none; transition: border 0.25s;
-            font-family: 'Segoe UI', sans-serif;
-        }
+        textarea, input[type="text"] { width: 100%; padding: 13px; border-radius: 8px; border: 1px solid #2d3148; background: #0f1117; color: #f8fafc; font-size: 0.9rem; resize: vertical; outline: none; transition: border 0.25s; font-family: 'Segoe UI', sans-serif; }
         textarea:focus, input[type="text"]:focus { border-color: #7c3aed; }
-        .hint {
-            font-size: 0.78rem; color: #475569; margin-top: 10px;
-            border-left: 2px solid #7c3aed; padding-left: 10px; line-height: 1.5;
-        }
-
-        /* ── BUTTON ── */
-        .btn {
-            width: 100%; padding: 13px; margin-top: 14px; border: none;
-            border-radius: 8px; background: #4ade80; color: #052e16;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: opacity 0.25s;
-        }
+        .hint { font-size: 0.78rem; color: #475569; margin-top: 10px; border-left: 2px solid #7c3aed; padding-left: 10px; line-height: 1.5; }
+        .btn { width: 100%; padding: 13px; margin-top: 14px; border: none; border-radius: 8px; background: #4ade80; color: #052e16; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: opacity 0.25s; }
         .btn:hover { opacity: 0.88; }
-
-        /* ── LOADER ── */
         .loader { display: none; text-align: center; padding: 24px; color: #7c3aed; }
-        .spinner {
-            width: 34px; height: 34px; border: 3px solid #1e2030;
-            border-top-color: #7c3aed; border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin: 0 auto 10px;
-        }
+        .spinner { width: 34px; height: 34px; border: 3px solid #1e2030; border-top-color: #7c3aed; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── RESULTS ── */
         #results { display: none; }
-
-        /* ── TOP ROW ── */
-        .dash-top {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 16px;
-            margin-bottom: 16px;
-            align-items: start;
-        }
+        .dash-top { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; margin-bottom: 16px; align-items: start; }
         .dash-left { display: flex; flex-direction: column; gap: 12px; }
-
-        /* Verdict */
-        .verdict {
-            border-radius: 12px; padding: 16px 18px;
-            display: flex; align-items: center; gap: 12px;
-            border: 0.5px solid #2d3148;
-        }
+        .verdict { border-radius: 12px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; border: 0.5px solid #2d3148; }
         .verdict.positive { background: #052e16; border-color: #14532d; }
         .verdict.negative { background: #1c0a0a; border-color: #450a0a; }
-        .verdict.mixed    { background: #1e1a2e; border-color: #3b2d6e; }
+        .verdict.mixed { background: #1e1a2e; border-color: #3b2d6e; }
         .verdict-icon { font-size: 1.8rem; }
         .verdict-text h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 3px; }
         .verdict.positive .verdict-text h3 { color: #4ade80; }
         .verdict.negative .verdict-text h3 { color: #f87171; }
-        .verdict.mixed    .verdict-text h3 { color: #c4b5fd; }
+        .verdict.mixed .verdict-text h3 { color: #c4b5fd; }
         .verdict-text p { font-size: 0.8rem; color: #475569; }
-
-        /* Stat cards */
         .stat-cards { display: flex; flex-direction: column; gap: 8px; }
-        .stat-card {
-            background: #0f1117; border-radius: 10px; padding: 14px 18px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 0.5px solid #1e2030;
-        }
+        .stat-card { background: #0f1117; border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border: 0.5px solid #1e2030; }
         .stat-label { font-size: 0.85rem; color: #475569; }
         .stat-number { font-size: 1.4rem; font-weight: 600; }
-        .col-total    { color: #c4b5fd; }
+        .col-total { color: #c4b5fd; }
         .col-positive { color: #4ade80; }
         .col-negative { color: #f87171; }
-
-        /* Charts */
         .dash-right { display: flex; flex-direction: column; }
-        .charts-inner {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 12px; align-items: center; margin-top: 4px;
-        }
+        .charts-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; margin-top: 4px; }
         .chart-wrap { display: flex; justify-content: center; align-items: center; }
-        #sentimentChart { width: 160px !important; height: 160px !important; }
-        #barChart { width: 100% !important; }
-
-        /* ── BOTTOM ROW ── */
-        .dash-bottom {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 16px;
-        }
+        .chart-square { width: 160px; height: 160px; position: relative; }
+        .dash-bottom { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; }
         .wordcloud-img { width: 100%; border-radius: 8px; margin-top: 8px; }
-
-        /* Comments */
-        .comments-list {
-            display: flex; flex-direction: column; gap: 8px;
-            max-height: 420px; overflow-y: auto;
-        }
-        .comment-item {
-            background: #0f1117; border-radius: 8px; padding: 11px 13px;
-            display: flex; justify-content: space-between; align-items: flex-start;
-            gap: 10px; border: 0.5px solid #1e2030;
-        }
+        .comments-list { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+        .comment-item { background: #0f1117; border-radius: 8px; padding: 11px 13px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; border: 0.5px solid #1e2030; }
         .comment-text { flex: 1; font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
         .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
         .badge.Positive { background: #14532d; color: #4ade80; }
         .badge.Negative { background: #450a0a; color: #f87171; }
         .confidence { font-size: 0.7rem; color: #475569; margin-top: 4px; text-align: right; }
-
-        /* ── RESPONSIVE ── */
         @media (max-width: 700px) {
             .header h1 { font-size: 1.5rem; }
             .dash-top, .dash-bottom { grid-template-columns: 1fr; }
@@ -220,7 +88,6 @@
 </div>
 
 <div class="container">
-
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('bulk')">📋 Paste Comments</button>
         <button class="tab-btn" onclick="switchTab('youtube')">🎬 YouTube URL</button>
@@ -256,8 +123,6 @@ Great work as always"></textarea>
     </div>
 
     <div id="results">
-
-        <!-- TOP ROW -->
         <div class="dash-top">
             <div class="dash-left">
                 <div class="verdict" id="verdict-banner">
@@ -285,13 +150,18 @@ Great work as always"></textarea>
             <div class="dash-right card">
                 <h2>📊 Sentiment Breakdown</h2>
                 <div class="charts-inner">
-                    <div class="chart-wrap"><canvas id="sentimentChart"></canvas></div>
-                    <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+                    <div class="chart-wrap">
+                        <div class="chart-square">
+                            <canvas id="sentimentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="barChart" style="width:100% !important;"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM ROW -->
         <div class="dash-bottom">
             <div class="card" id="wordcloud-card" style="display:none;">
                 <h2>☁️ Word Cloud</h2>
@@ -302,10 +172,10 @@ Great work as always"></textarea>
                 <div class="comments-list" id="comments-list"></div>
             </div>
         </div>
-
     </div>
 </div>
 
+<script src="/static/chart.js"></script>
 <script>
     let chartInstance = null;
     let barChartInstance = null;
@@ -348,23 +218,33 @@ Great work as always"></textarea>
         document.getElementById('negative-count').textContent = s.negative + ' (' + s.negative_pct + '%)';
 
         if (chartInstance) chartInstance.destroy();
-        chartInstance = new Chart(document.getElementById('sentimentChart').getContext('2d'), {
+        chartInstance = new Chart(document.getElementById('sentimentChart'), {
             type: 'doughnut',
             data: {
-                 labels: ['Positive 😊', 'Negative 😞'],
+                labels: ['Positive 😊', 'Negative 😞'],
                 datasets: [{ data: [s.positive, s.negative], backgroundColor: ['#4ade80', '#f87171'], borderWidth: 0 }]
             },
             options: {
                 maintainAspectRatio: false,
-                 plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } }
+                plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } }
             }
         });
 
         if (barChartInstance) barChartInstance.destroy();
-        barChartInstance = new Chart(document.getElementById('barChart').getContext('2d'), {
+        barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar',
-            data: { labels: ['Positive','Negative'], datasets: [{ data: [s.positive,s.negative], backgroundColor: ['#4ade80','#f87171'], borderRadius: 6, borderWidth: 0 }] },
-            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: '#1e2030' } }, y: { ticks: { color: '#94a3b8' }, grid: { display: false } } } }
+            data: {
+                labels: ['Positive', 'Negative'],
+                datasets: [{ data: [s.positive, s.negative], backgroundColor: ['#4ade80', '#f87171'], borderRadius: 6, borderWidth: 0 }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#475569' }, grid: { color: '#1e2030' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                }
+            }
         });
 
         if (data.wordcloud) {
@@ -375,7 +255,7 @@ Great work as always"></textarea>
         const list = document.getElementById('comments-list');
         list.innerHTML = '';
         data.results.forEach(r => {
-            list.innerHTML += `<div class="comment-item"><div class="comment-text">${r.comment}</div><div><div class="badge ${r.sentiment}">${r.sentiment}</div><div class="confidence">${r.confidence}% sure</div></div></div>`;
+            list.innerHTML += '<div class="comment-item"><div class="comment-text">' + r.comment + '</div><div><div class="badge ' + r.sentiment + '">' + r.sentiment + '</div><div class="confidence">' + r.confidence + '% sure</div></div></div>';
         });
 
         document.getElementById('results').style.display = 'block';
@@ -406,6 +286,5 @@ Great work as always"></textarea>
             .catch(e => { alert('Something went wrong: ' + e); });
     }
 </script>
-<script src="/static/chart.js"></script>
 </body>
 </html>
