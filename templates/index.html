@@ -163,12 +163,15 @@
         /* Charts */
         .dash-right { display: flex; flex-direction: column; }
         .charts-inner {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 12px; align-items: center; margin-top: 4px;
+             display: flex;
+            flex-direction: column;
+             gap: 16px;
+            align-items: center;
+            margin-top: 4px;
         }
-        .chart-wrap { display: flex; justify-content: center; align-items: center; }
-        #sentimentChart { max-width: 180px; }
-        #barChart { width: 100% !important; }
+        .chart-wrap { display: flex; justify-content: center; align-items: center; width: 100%; }
+        #sentimentChart { max-width: 260px; }
+        #barChart { width: 100% !important; max-height: 80px; }
 
         /* ── BOTTOM ROW ── */
         .dash-bottom {
