@@ -161,7 +161,7 @@ def analyze_youtube():
         negative_count = 0
 
         for item in data['items'][:200]:
-            comment = item.get('text', '')
+            comment = item.get('contentText', '')
             if not comment.strip():
                 continue
             label, confidence = predict_sentiment(comment)
