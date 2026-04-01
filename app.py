@@ -110,8 +110,11 @@ def analyze_bulk():
     negative_pct = round((negative_count / total) * 100, 1)
 
     # Generate word cloud
-    all_text = ' '.join([r['comment'] for r in results])
-    wc_image = generate_wordcloud(all_text)
+    try:
+        all_text = ' '.join([r['comment'] for r in results])
+        wc_image = generate_wordcloud(all_text)
+    except:
+        wc_image = None
 
     return jsonify({
         'results': results,
@@ -194,8 +197,11 @@ def analyze_youtube():
 
         positive_pct = round((positive_count / total) * 100, 1)
         negative_pct = round((negative_count / total) * 100, 1)
-        all_text = ' '.join([r['comment'] for r in results])
-        wc_image = generate_wordcloud(all_text)
+        try:
+            all_text = ' '.join([r['comment'] for r in results])
+            wc_image = generate_wordcloud(all_text)
+        except:
+            wc_image = None
 
         return jsonify({
             'results': results,
