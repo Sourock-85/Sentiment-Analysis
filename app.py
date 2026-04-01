@@ -182,7 +182,7 @@ def analyze_youtube():
         })
 
     except Exception as e:
-        return jsonify({'error': f'Could not fetch comments: {str(e)}'})
+        return jsonify({'error': 'YouTube fetching is only available in the local version. Please use the Paste Comments tab for the live demo, or run the app locally for YouTube analysis.'})
 
 
 if __name__ == '__main__':
