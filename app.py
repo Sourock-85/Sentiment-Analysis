@@ -133,34 +133,47 @@ def analyze_youtube():
         return jsonify({'error': 'No URL provided'})
 
     try:
-        # Extract video ID
         video_id = re.search(r'(?:v=|\/)([0-9A-Za-z_-]{11})', url)
         if not video_id:
             return jsonify({'error': 'Invalid YouTube URL'})
         video_id = video_id.group(1)
 
-        # Fetch comments via RapidAPI
         import requests as req_lib
         api_url = "https://youtube-media-downloader.p.rapidapi.com/v2/video/comments"
         headers = {
             "x-rapidapi-host": "youtube-media-downloader.p.rapidapi.com",
             "x-rapidapi-key": "36c443cff2msh178c1f72964eed0p1a6d60jsnd8ab4f6469f5"
         }
-        params = {
-            "videoId": video_id,
-            "sortBy": "top"
-        }
-        response = req_lib.get(api_url, headers=headers, params=params)
-        data = response.json()
 
-        if 'items' not in data:
+        all_comments = []
+        next_token = None
+        max_pages = 5  # fetches up to 100 comments (20 x 5 pages)
+
+        for page in range(max_pages):
+            params = { "videoId": video_id, "sortBy": "top" }
+            if next_token:
+                params["nextToken"] = next_token
+
+            response = req_lib.get(api_url, headers=headers, params=params)
+            data = response.json()
+
+            if 'items' not in data:
+                break
+
+            all_comments.extend(data['items'])
+            next_token = data.get('nextToken')
+
+            if not next_token:
+                break
+
+        if not all_comments:
             return jsonify({'error': 'No comments found or invalid URL'})
 
         results = []
         positive_count = 0
         negative_count = 0
 
-        for item in data['items'][:200]:
+        for item in all_comments:
             comment = item.get('contentText', '')
             if not comment.strip():
                 continue
