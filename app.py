@@ -60,7 +60,7 @@ def generate_wordcloud(text):
         text = re.sub(r'\b\w{1,2}\b', '', text)   # remove 1-2 letter words only
 
         wc = WordCloud(
-            width=800, height=300,
+            width=800, height=500,
             background_color='#0f1117',
             colormap='cool',
             max_words=80,
