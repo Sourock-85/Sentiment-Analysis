@@ -6,3 +6,4 @@ numpy
 wordcloud
 youtube-comment-downloader
 gunicorn
+requests 

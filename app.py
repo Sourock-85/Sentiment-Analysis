@@ -129,30 +129,44 @@ def analyze_bulk():
 @app.route('/analyze_youtube', methods=['POST'])
 def analyze_youtube():
     url = request.form.get('youtube_url', '')
-
     if not url:
         return jsonify({'error': 'No URL provided'})
 
     try:
-        downloader = YoutubeCommentDownloader()
-        comments_gen = downloader.get_comments_from_url(url)
-        # Fetch max 100 comments for speed
-        comments_data = list(itertools.islice(comments_gen, 200))
+        # Extract video ID
+        video_id = re.search(r'(?:v=|\/)([0-9A-Za-z_-]{11})', url)
+        if not video_id:
+            return jsonify({'error': 'Invalid YouTube URL'})
+        video_id = video_id.group(1)
 
-        if not comments_data:
+        # Fetch comments via RapidAPI
+        import requests as req_lib
+        api_url = "https://youtube-media-downloader.p.rapidapi.com/v2/video/comments"
+        headers = {
+            "x-rapidapi-host": "youtube-media-downloader.p.rapidapi.com",
+            "x-rapidapi-key": "36c443cff2msh178c1f72964eed0p1a6d60jsnd8ab4f6469f5"
+        }
+        params = {
+            "videoId": video_id,
+            "sortBy": "top"
+        }
+        response = req_lib.get(api_url, headers=headers, params=params)
+        data = response.json()
+
+        if 'items' not in data:
             return jsonify({'error': 'No comments found or invalid URL'})
 
         results = []
         positive_count = 0
         negative_count = 0
 
-        for item in comments_data:
+        for item in data['items'][:200]:
             comment = item.get('text', '')
             if not comment.strip():
                 continue
             label, confidence = predict_sentiment(comment)
             results.append({
-                'comment': comment[:200],  # trim very long comments
+                'comment': comment[:200],
                 'sentiment': label,
                 'confidence': confidence
             })
@@ -162,10 +176,11 @@ def analyze_youtube():
                 negative_count += 1
 
         total = len(results)
+        if total == 0:
+            return jsonify({'error': 'No valid comments found'})
+
         positive_pct = round((positive_count / total) * 100, 1)
         negative_pct = round((negative_count / total) * 100, 1)
-
-       # Generate word cloud
         all_text = ' '.join([r['comment'] for r in results])
         wc_image = generate_wordcloud(all_text)
 
@@ -173,11 +188,11 @@ def analyze_youtube():
             'results': results,
             'wordcloud': wc_image,
             'summary': {
-            'total': total,
-            'positive': positive_count,
-            'negative': negative_count,
-            'positive_pct': positive_pct,
-            'negative_pct': negative_pct
+                'total': total,
+                'positive': positive_count,
+                'negative': negative_count,
+                'positive_pct': positive_pct,
+                'negative_pct': negative_pct
             }
         })
 
