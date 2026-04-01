@@ -198,7 +198,7 @@ def analyze_youtube():
         positive_pct = round((positive_count / total) * 100, 1)
         negative_pct = round((negative_count / total) * 100, 1)
         try:
-            all_text = ' '.join([r['comment'] for r in results])
+            all_text = ' '.join([r['comment'] for r in results[:50]])
             wc_image = generate_wordcloud(all_text)
         except:
             wc_image = None
