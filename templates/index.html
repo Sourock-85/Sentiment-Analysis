@@ -166,7 +166,7 @@ Great work as always"></textarea>
         <div class="dash-bottom">
             <div class="card" id="wordcloud-card" style="display:none;">
                 <h2>☁️ Word Cloud</h2>
-                <img id="wordcloud-img" class="wordcloud-img" src="" alt="Word Cloud" />
+                <canvas id="wordcloud-canvas" width="500" height="300" style="width:100%; border-radius:8px;"></canvas>
             </div>
             <div class="card">
                 <h2>💬 Comment-by-Comment Analysis</h2>
@@ -176,6 +176,7 @@ Great work as always"></textarea>
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
 <script src="/static/chart.js"></script>
 <script>
     let chartInstance = null;
@@ -248,9 +249,34 @@ Great work as always"></textarea>
             }
         });
 
-        if (data.wordcloud) {
-            document.getElementById('wordcloud-img').src = data.wordcloud;
+        if (data.all_words) {
             document.getElementById('wordcloud-card').style.display = 'block';
+            document.getElementById('dash-bottom-row').style.gridTemplateColumns = '1fr 1.2fr';
+
+            const words = data.all_words.toLowerCase()
+                .replace(/[^a-zA-Z\s]/g, '')
+                .split(/\s+/)
+                .filter(w => w.length > 3);
+
+            const freq = {};
+            words.forEach(w => freq[w] = (freq[w] || 0) + 1);
+
+            const wordList = Object.entries(freq)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 60)
+                .map(([word, count]) => [word, count * 10]);
+
+            setTimeout(() => {
+                WordCloud(document.getElementById('wordcloud-canvas'), {
+                    list: wordList,
+                    gridSize: 8,
+                    weightFactor: 2,
+                    fontFamily: 'Segoe UI',
+                    color: () => ['#4ade80', '#c4b5fd', '#60a5fa', '#f472b6'][Math.floor(Math.random() * 4)],
+                    backgroundColor: '#0f1117',
+                    rotateRatio: 0.3,
+                });
+            }, 100);
         }
 
         const list = document.getElementById('comments-list');

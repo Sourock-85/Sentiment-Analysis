@@ -197,15 +197,13 @@ def analyze_youtube():
 
         positive_pct = round((positive_count / total) * 100, 1)
         negative_pct = round((negative_count / total) * 100, 1)
-        try:
-            all_text = ' '.join([r['comment'] for r in results[:50]])
-            wc_image = generate_wordcloud(all_text)
-        except:
-            wc_image = None
+        wc_image = None
+        all_words = ' '.join([r['comment'] for r in results])
 
         return jsonify({
             'results': results,
             'wordcloud': wc_image,
+            'all_words': all_words,
             'summary': {
                 'total': total,
                 'positive': positive_count,
